@@ -33,9 +33,6 @@ function diagnosticBannerDevPlugin(): PluginOption {
 
 export default defineConfig({
   plugins: [diagnosticBannerDevPlugin(), react(), viteSingleFile()],
-  esbuild: {
-    pure: ['console.debug', 'console.info', 'console.warn', 'console.error'],
-  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -44,10 +41,14 @@ export default defineConfig({
   build: {
     target: 'es2022',
     modulePreload: false,
-    minify: 'esbuild',
+    minify: true,
     cssMinify: true,
     assetsInlineLimit: 100000000,
-    rollupOptions: {
+    rolldownOptions: {
+      // Vite 8 (Rolldown): drop these console calls from the shipped bundle (was esbuild.pure before Vite 8)
+      treeshake: {
+        manualPureFunctions: ['console.debug', 'console.info', 'console.warn', 'console.error'],
+      },
       output: {
         manualChunks: undefined,
       },
